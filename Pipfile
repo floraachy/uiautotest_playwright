@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytest = "==6.2.5"
+requests = "==2.26.0"
+loguru = "*"
+pytest-rerunfailures = "*"
+faker = "*"
+yagmail = "*"
+pywinauto = "*"
+allure-pytest = "*"
+requests-toolbelt = "*"
+pytest-bdd = "*"
+sttable = "*"
+playwright = "*"
+pytest-playwright = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
