@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2023/7/24 11:26
+# @Time    : 2023/9/19 15:10
 # @Author  : chenyinhua
-# @File    : test_create_and_delete_projects.py
+# @File    : create_project_page.py
 # @Software: PyCharm
 # @Desc:
 
 # 标准库导入
 import random
 # 第三方库导入
-from pytest_bdd import scenarios, given, when, then
-from playwright.sync_api import Page, expect
+from pytest_bdd import when, then
+from playwright.sync_api import Page
 from loguru import logger
 # 本地应用/模块导入
 from case_utils.allure_handle import allure_step
 from case_utils.data_handle import data_handle, eval_data_process
 from config.global_vars import GLOBAL_VARS
-
-scenarios('./projects/create_and_delete_projects.feature')
 
 case = {
     "name": "Auto Test ${generate_name()}",
@@ -30,23 +28,6 @@ case = {
 case = eval_data_process(data_handle(obj=case, source=None))
 
 logger.debug(f"打印用例，定位一下：{case}")
-
-
-@given("打开浏览器，访问GitLink首页<host>")
-def visit_home(page: Page, host):
-    page.goto(host)
-
-
-@when(name="点击导航栏右上角的新建图标")
-def click_new_icon(page: Page):
-    page.hover(selector="xpath=//i[contains(@class, 'icon-sousuo')]/following-sibling::img")
-    allure_step(step_title=f"登录状态下，点击右上角 新建 图标，显示：新建项目，导入项目，新建组织，加入项目")
-
-
-@then(name="点击新建图标下的新建项目按钮，进入新建项目页面")
-def click_new_project_button(page: Page):
-    page.click(selector="xpath=//a[text()='新建项目']")
-    allure_step(step_title=f"登录状态下，点击右上角 新建>新建项目 按钮")
 
 
 @when(name="输入项目名称：<name>， 项目标识：<identifier>, 项目简介：<desc>")
@@ -113,52 +94,3 @@ def check_current_url(page: Page, host, project_url=f'{GLOBAL_VARS["login"]}/{ca
     actual = page.url
     allure_step(step_title=f"预期结果：{expected} || 实际结果：{actual}")
     assert expected == actual
-
-
-@then("当前应该不存在 私有 标签")
-def check_private_tag(page: Page):
-    locator = page.locator("xpath=//span[text()='私有']")
-    expect(locator, "当前应该不存在 私有 标签").to_be_hidden()
-
-
-@then("当前应该 存在 私有 标签")
-def check_private_tag_exist(page: Page):
-    locator = page.locator("xpath=//span[text()='私有']")
-    expect(locator, "当前应该不存在 私有 标签").to_be_visible()
-
-
-@when("点击 仓库设置 导航栏，进入仓库基本设置页面")
-def click_repo_setting_button(page: Page):
-    page.click("xpath=//span[text()='仓库设置']")
-    allure_step(step_title="点击 仓库设置按钮")
-
-
-@when("滚动到底部，点击 删除本仓库 按钮")
-def click_delete_repo_button(page: Page):
-    # 往下滑动
-    js = "window.scrollTo(0, document.documentElement.scrollHeight)"
-    page.evaluate(js)
-    page.click("xpath=//span[text()='删除本仓库']")
-
-
-@when('在弹出确认提示弹窗"该操作无法撤销！且将会一并删除相关的疑修、合并请求、工作流、里程碑、动态等数据" 中 点击 确定 按钮')
-def click_delete_repo_confirm_button(page: Page):
-    locator = page.locator("xpath=//span[contains(text(), '该操作无法撤销')]")
-    expect(locator).to_be_visible()
-    allure_step('当前弹出确认提示弹窗"该操作无法撤销！且将会一并删除相关的疑修、合并请求、工作流、里程碑、动态等数据"')
-    page.click("xpath=//a[text()='确定']")
-    allure_step('当前弹出确认提示弹窗中 点击 确定 按钮')
-
-
-@then('仓库删除成功，有成功提示"仓库删除成功！"')
-def check_delete_success_text(page: Page):
-    locator = page.locator("xpath=//div[text()='仓库删除成功！']")
-    expect(locator).to_contain_text("仓库删除成功！")
-
-
-@then("当前页面跳转到用户个人主页：<host>/<login>")
-def check_current_url_on_page(page: Page, host, login=GLOBAL_VARS.get("login")):
-    expected = f'{host}/{login}'
-    actual = page.url
-    allure_step(step_title=f"预期结果：{expected} || 实际结果：{actual}")
-    expect(page).to_have_url(expected)

@@ -69,13 +69,17 @@ pip install pipenv
 ### 3. 删除框架中的示例用例数据
 1）删除 `test_cases`目录下所有`test`开头的文件
 2）删除`test_features`目录下所有文件
+3）删除`pages`目录下所有文件
 注意：如果想先体验一下框架，可以先保留我写的示例用例。
 
 ### 4. 编写测试用例
 #### 1. 在`test_features`目录新建一个`.feature`文件，按照BDD模式编写测试用例
 
 
-#### 2. 基于`.feature`文件， 在 `test_cases`目录下新建一个`test_*py`文件，实现测试用例
+#### 2. 基于`.feature`文件， 以及结合POM模式，在`pages`目录，新建一个`*_page.py`文件, 封装元素定位以及相关操作方法作为步骤函数。
+
+
+#### 3.在 `test_cases`目录下新建一个`test_*py`文件，导入相关pages，运行测试场景。
 
 此处需要对BDD知识有一定的了解，可以参考文章：[Pytest-BDD行为驱动开发测试](https://www.gitlink.org.cn/zone/tester/newdetail/301)
 
