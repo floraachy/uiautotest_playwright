@@ -16,6 +16,7 @@ import pytest
 # 本地应用/模块导入
 from config.path_config import IMG_DIR
 from case_utils.allure_handle import allure_step, allure_title
+from case_utils.data_handle import data_handle
 from config.settings import RunConfig
 
 
@@ -105,6 +106,23 @@ def pytest_bdd_before_scenario(request, feature, scenario):
     feature_name = getattr(feature, "name", None)
     scenario_name = getattr(scenario, "name", None)
     allure_title(title=f"{feature_name}-{scenario_name}")
+
+
+def pytest_bdd_before_step(request, feature, scenario, step, step_func):
+    """在执行步骤函数并评估其参数之前调用"""
+
+    step_name = getattr(step, "name", None)
+
+    # 对步骤进行处理，将需要替换的关键字${},利用data_handle方法进行替换处理
+    setattr(step, "lines", [])
+    print(f"打印处理之前的：{step_name}", end="\n")
+    new_step_name = data_handle(step_name, {})
+    print(f"打印处理之后的：{new_step_name}", end="\n")
+    setattr(step, "name", new_step_name)
+
+    # 获取罪行的步骤名称，作为allure的步骤
+    step_name = getattr(step, "name", None)
+    allure_step(step_title=f"Step_name: --> {step_name}")
 
 
 # ------------------------------------- END: pytest-bdd钩子函数处理---------------------------------------#

@@ -6,7 +6,6 @@
 # @Desc:
 
 # 标准库导入
-import random
 # 第三方库导入
 from pytest_bdd import scenarios
 # 本地应用/模块导入

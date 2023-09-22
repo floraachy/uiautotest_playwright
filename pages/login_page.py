@@ -24,7 +24,6 @@ def input_login_info_on_pop(page: Page, user_info):
         password = row["密码"]
         page.fill(selector="xpath=//input[@name='username']", value=login)
         page.fill(selector="xpath=//input[@name='password']", value=password)
-        allure_step(step_title=f"登录弹窗输入--> 用户名: {login}  密码：{password}")
 
 
 @when(parsers.parse("登录页面中，我输入以下信息进行登录：\n{user_info}"))
@@ -35,20 +34,16 @@ def input_login_info(page: Page, user_info):
         password = row["密码"]
         page.fill(selector="id=login_username", value=login)
         page.fill(selector="id=login_password", value=password)
-        allure_step(step_title=f"登录弹窗输入--> 用户名: {login}  密码：{password}")
-        allure_step(step_title=f"登录页面输入--> 用户名: {login}  密码：{password}")
 
 
 @when("弹窗中，点击: 登录按钮， 提交登录表单")
 def submit_login_button_on_pop(page: Page):
     page.click(selector="xpath=//div[text()='登录']")
-    allure_step(step_title=f"登录弹窗中，点击登录按钮，提交登录表单")
 
 
 @when("登录页面中，点击: 登录按钮， 提交登录表单")
 def submit_login_button_on_page(page: Page):
     page.click(selector="xpath=//span[text()='登 录']/..")
-    allure_step(step_title=f"登录页面中，点击登录按钮，提交登录表单")
     # page.wait_for_timeout(10000)  # 超时时间是10s
     page.wait_for_load_state()
 

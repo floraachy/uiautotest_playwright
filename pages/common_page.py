@@ -35,13 +35,11 @@ def check_current_url_on_page(page: Page, host, login=GLOBAL_VARS.get("login")):
 @when(name="点击导航栏右上角的新建图标")
 def click_new_icon(page: Page):
     page.hover(selector="xpath=//i[contains(@class, 'icon-sousuo')]/following-sibling::img")
-    allure_step(step_title=f"登录状态下，点击右上角 新建 图标，显示：新建项目，导入项目，新建组织，加入项目")
 
 
 @then(name="点击新建图标下的新建项目按钮，进入新建项目页面")
 def click_new_project_button(page: Page):
     page.click(selector="xpath=//a[text()='新建项目']")
-    allure_step(step_title=f"登录状态下，点击右上角 新建>新建项目 按钮")
 
 
 @when("点击导航栏右上角的登录按钮，进入登录页面")
