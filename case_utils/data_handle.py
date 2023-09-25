@@ -170,6 +170,7 @@ class DataHandle:
         # 获取FakerData类所有自定义方法
         self.method_list = [method for method in dir(FakerData) if
                             callable(getattr(FakerData, method)) and not method.startswith("__")]
+        self.should_print = True
 
     # 将"[1,2,3]" 或者"{'k':'v'}" -> [1,2,3], {'k':'v'}
     def eval_data(self, data):
@@ -265,12 +266,17 @@ class DataHandle:
                     else:
                         obj = obj.replace(key, str(eval(func)))
                 else:
-                    if func[:-2] in self.method_list:  # 证明是FakerData类方法
-                        obj = obj.replace(key, str(getattr(self.FakerDataClass, func[:-2])()))
+                    func_parts = func.split('(')
+                    func_name = func_parts[0]
+                    func_args_str = ''.join(func_parts[1:])[:-1]
+                    if func_name in self.method_list:  # 证明是FakerData类方法
+                        method = getattr(self.FakerDataClass, func_name)
+                        res = eval(f"method({func_args_str})")  # 尝试直接调用
+                        obj = obj.replace(key, str(res))
                     else:  # 不是FakerData类方法，但有可能是 1+1 这样的
                         obj = obj.replace(key, str(eval(func)))
             except:
-                print("Warn: --------函数：%s 无法调用成功-------" % func)
+                print("Warn: --------函数：%s 无法调用成功, 请检查是否存在该函数-------" % func)
                 obj = obj.replace(key, funcs[0])
                 pass
 
@@ -282,7 +288,7 @@ data_handle = DataHandle().data_handle
 
 if __name__ == '__main__':
     # 下面是测试代码
-    source = {
+    target = {
         "user_id": 1,
         "user_name": "flora",
         "name": "test",
@@ -290,66 +296,11 @@ if __name__ == '__main__':
     }
     # 需要识别${python表达式}，这里random方法是需要导入random包的
     data_01 = "选择.gitignore: ${random.choice(['Ada', 'Actionscript', 'Ansible', 'Android', 'Agda'])}，开源许可证: ${random.choice(['0BSD', 'AAL', 'AFL-1.1', '389-exception'])}"
-    new = data_handle(data_01)
-    print(new)
+    # new = data_handle(data_01)
+    # print(new, type(new))
 
-    # 需要识别 字符串里面是python表达式的情况
-    data_02 = "[1,2,3,4]"
-    new = data_handle(data_02)
-    print(new)
-
-    data_03 = "1+1"
-    new = data_handle(data_03)
-    print(new)
-
-    data_04 = "[1, '1', [1, 2], {'name':'flora', 'age': '1'}]"
-
-    new = data_handle(data_04)
-    print(new)
-
-    data_05 = "user_id: ${user_id}, user_name: ${user_name}"
-    new = data_handle(data_05, source)
-    print(new)
-
-    # 需要识别自定义的函数，同时支持多种，下面两种写法有细微差别
-    data_06 = "Hello, ${generate_female_name()}! Random number: ${generate_random_int()}"
-    new = data_handle(data_06)
-    print(new)
-
-    data_07 = "Hello, ${generate_female_name()}! Random number: ${FakerData().generate_random_int()}"
-    data_07_09 = "Hello, ${FakerData().generate_female_name()}! Random number: ${FakerData.generate_random_int()}"
-    new = data_handle(data_07)
-    print(new)
-    new = data_handle(data_07_09)
-    print(new)
-
-    data_08 = {
-        "payload": {
-            "startTime": "${FakerData.generate_time('%Y-%m-%d')}",
-            "common2": "${faker.name()}",  # 这里是使用类FakerData里面的实例属性faker
-            "url": "/api/accounts/${FakerData.generate_time('%Y-%m-%d')} / login.json",
-            "fragement": {
-                "startTime": "${FakerData.generate_time('%Y-%m-%d')}",
-                "common2": "${faker.name()}",  # 这里是使用类FakerData里面的实例属性faker
-                "url": "/api/accounts/${FakerData.generate_time('%Y-%m-%d')} / login.json"
-            }
-        }
-
-    }
-    new = data_handle(data_08)
-    print(new)
-
-    data_09 = "/api/accounts/${FakerData.generate_time('%Y-%m-%d')}/login.json"
-    new = data_handle(data_09)
-    print(new)
-
-    # FakerData类中没有封装random_name这个方法，会无法处理
-    data_10 = '[[1,2,3,4],${FakerData().random_name()}]'
-    new = data_handle(data_10)
-    print(new)
-
-    # 这个用到了source
-    data_11 = {
+    # 这个用到了target
+    data_02 = {
         "age": "${generate_random_int()}.",
         "message": "Hello, ${FakerData().generate_female_name()}! Your age is ${age}. Random number: ${FakerData().generate_random_int()}",
         "nested_data": [
@@ -362,12 +313,84 @@ if __name__ == '__main__':
             }
         ]
     }
-    new = data_handle(data_11, source)
-    print(new)
+    # new = data_handle(data_02, target)
+    # print(new, type(new))
+
+    data_03 = "user_id: ${user_id}, user_name: ${user_name}"
+    # new = data_handle(data_03, target)
+    # print(new, type(new))
+
+    # 需要识别 字符串里面是python表达式的情况
+    data_04 = "[1,2,3,4]"
+    # new = data_handle(data_04)
+    # print(new, type(new))
+
+    data_05 = "1+1"
+    # new = data_handle(data_05)
+    # print(new, type(new))
+
+    data_06 = "[1, '1', [1, 2], {'name':'flora', 'age': '1'}]"
+    # new = data_handle(data_06)
+    # print(new, type(new))
+
+    # 需要识别自定义的函数，同时支持多种，下面两种写法有细微差别
+    data_07 = "Hello, ${generate_female_name()}! Random number: ${generate_random_int()}"
+    # new = data_handle(data_07)
+    # print(new, type(new))
+
+    data_08 = "Hello, ${generate_female_name()}! Random number: ${FakerData().generate_random_int()}"
+    # new = data_handle(data_08)
+    # print(new, type(new))
+
+    data_09 = "Hello, ${FakerData().generate_female_name()}! Random number: ${FakerData.generate_random_int()}"
+    # new = data_handle(data_09)
+    # print(new, type(new))
+
+    data_10 = {
+        "payload": {
+            "startTime": "${FakerData.generate_time('%Y-%m-%d')}",
+            "common2": "${faker.name()}",  # 这里是使用类FakerData里面的实例属性faker
+            "url": "/api/accounts/${FakerData.generate_time('%Y-%m-%d')} / login.json",
+            "fragement": {
+                "startTime": "${FakerData.generate_time('%Y-%m-%d')}",
+                "common2": "${faker.name()}",  # 这里是使用类FakerData里面的实例属性faker
+                "url": "/api/accounts/${FakerData.generate_time('%Y-%m-%d')} / login.json"
+            }
+        }
+
+    }
+    # new = data_handle(data_10)
+    # print(new, type(new))
+
+    data_11 = "/api/accounts/${FakerData.generate_time('%Y-%m-%d')}/login.json"
+    # new = data_handle(data_11)
+    # print(new, type(new))
+
+    # FakerData类中没有封装random_name这个方法，会无法处理
+    data_12 = '[[1,2,3,4],"${FakerData().random_name()}"]'
+    # new = data_handle(data_12)
+    # print(new, type(new))
+    # 下面这种写法不是字符串里面，不是正确格式的列表，${FakerData().generate_name()需要用引号包起来，因此无法正确处理成列表，最后返回的是str
+    data_13 = '[[1,2,3,4],${FakerData().generate_name()}]'
+    # new = data_handle(data_13)
+    # print(new, type(new))
+
+    data_15 = '[[1,2,3,4],${FakerData().generate_random_int()}]'
+    # new = data_handle(data_15)
+    # print(new, type(new))
+
     # 导入其他方法，也可以直接使用
-    from common_utils.time_handle import test_fun_a
-    data = "${test_fun_a()}"
-    new = data_handle(data)
-    print(new)
+    # from common_utils.time_handle import test_fun_a
+    # data = "${test_fun_a()}"
+    # new = data_handle(data)
+    # print(new, type(new))
 
-
+    # 支付方法传参使用
+    payload = {
+        "name": "${generate_name(lan='zh')}",
+        "repository_name": "${generate_name('zh')}",
+        "desc": '[[1,2,3,4],"${FakerData().generate_random_int()}"]',
+        "pre": '[[1,2,3,4],${FakerData().generate_name()}]'
+    }
+    # new = data_handle(payload)
+    # print(new, type(new))
