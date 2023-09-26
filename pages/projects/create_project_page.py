@@ -7,20 +7,33 @@
 
 # 标准库导入
 # 第三方库导入
-from pytest_bdd import when, then, parsers
+from pytest_bdd import given, when, then, parsers
 from playwright.sync_api import Page
+from sttable import parse_str_table
 # 本地应用/模块导入
 from case_utils.allure_handle import allure_step
 from config.global_vars import GLOBAL_VARS
 
 
-@when(parsers.parse("输入项目名称: {name}, 项目标识: {identifier}, 项目简介: {desc}"))
-def input_name_identifier_desc(page: Page, name, identifier, desc):
+@given(parsers.parse("测试项目关键数据：\n{info}"), target_fixture="projects")
+def projects(info):
+    project_info = parse_str_table(info)
+    for row in project_info.rows:
+        name = row["项目名称"]
+        identifier = row["项目标识"]
+        desc = row["项目简介"]
+        return dict(name=name, identifier=identifier, desc=desc)
+
+
+@when("输入项目名称, 项目标识, 项目简介")
+def input_name_identifier_desc(page: Page, projects):
+    name = projects["name"]
+    identifier = projects["identifier"]
+    desc = projects["desc"]
     # 输入项目名称
     page.fill(selector="xpath=//input[@id='NewWorkForm_name']", value=name)
     # 输入项目标识
     page.fill(selector="xpath=//input[@id='NewWorkForm_repository_name']", value=identifier)
-    GLOBAL_VARS["identifier"] = identifier
     # 输入项目简介
     page.fill(selector="xpath=//textarea[@id='NewWorkForm_description']", value=desc)
 
@@ -66,8 +79,8 @@ def submit_project_button(page: Page):
 
 
 @then("当前页面的url地址应该是：<host>/<project_url>")
-def check_current_url(page: Page, host):
-    expected = f"{host}/{GLOBAL_VARS['login']}/{GLOBAL_VARS['identifier']}"
+def check_current_url(page: Page, host, projects):
+    expected = f"{host}/{GLOBAL_VARS['login']}/{projects['identifier']}"
     actual = page.url
     allure_step(step_title=f"预期结果：{expected} || 实际结果：{actual}")
     assert expected == actual

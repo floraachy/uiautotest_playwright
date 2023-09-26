@@ -170,7 +170,6 @@ class DataHandle:
         # 获取FakerData类所有自定义方法
         self.method_list = [method for method in dir(FakerData) if
                             callable(getattr(FakerData, method)) and not method.startswith("__")]
-        self.should_print = True
 
     # 将"[1,2,3]" 或者"{'k':'v'}" -> [1,2,3], {'k':'v'}
     def eval_data(self, data):
