@@ -1,7 +1,7 @@
 @login
 Feature: 登录模块
     需求描述: 用户进入登录页面/弹窗登录页面，使用正确用户名以及密码可以登录成功
-    @todo
+
     Scenario: 弹窗登录: 正确用户名和密码登录成功
         Given 打开浏览器，访问项目首页<host>/explore
         When 点击导航栏右上角的登录按钮，打开登录弹窗
@@ -12,7 +12,7 @@ Feature: 登录模块
         Then 登录成功，当前页面的url地址应该是：<host>/explore
         And 登录成功，导航栏右上角显示的用户昵称应该是：auotest
 
-    @todo
+
     Scenario: 网页登录: 正确用户名和密码登录成功
         Given 打开浏览器，访问GitLink首页<host>
         When 点击导航栏右上角的登录按钮，进入登录页面

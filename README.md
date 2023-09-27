@@ -2,6 +2,8 @@
 
 本框架是基于Python+Pytest+Playwright+BDD的UI自动化测试框架。
 
+本框架要求使用者对pytest_bdd和playwright有一定的了解才能上手使用。
+
 * git地址: [https://gitlink.org.cn/floraachy/uiautotest_playwright.git](https://gitlink.org.cn/floraachy/uiautotest_playwright.git)
 * 项目参与者: floraachy
 * 个人主页： [https://www.gitlink.org.cn/floraachy](https://www.gitlink.org.cn/floraachy)
@@ -52,6 +54,11 @@ pip install pipenv
 4. 使用pipenv管理安装环境依赖包：pipenv install （必须在项目根目录下执行）
 ```
    注意：使用pipenv install会自动安装Pipfile里面的依赖包，该依赖包仅安装在虚拟环境里，不安装在测试机。
+```
+
+5. 安装playwright浏览器驱动
+```
+playwright install   # 安装浏览器驱动
 ```
 如上环境都已经搭建好了，包括框架依赖包也都安装好了。
 

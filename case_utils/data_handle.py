@@ -213,7 +213,7 @@ class DataHandle:
         func = {}
         keys = {}
         if not source or not isinstance(source, dict):
-            print("source为空或者source不是字典格式，都将认为是：{}")
+            # print("source为空或者source不是字典格式，都将认为是：{}")
             source = {}
         # 如果进来的是字符串，先将各种类型的表达式处理完
         if isinstance(obj, str):

@@ -14,7 +14,7 @@ class RunConfig:
     browser = ["chromium"]
 
     # 运行模式（headless, headed）
-    mode = "headed"
+    mode = "headless"
 
     # 窗口大小
     """

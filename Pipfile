@@ -10,12 +10,10 @@ loguru = "*"
 pytest-rerunfailures = "*"
 faker = "*"
 yagmail = "*"
-pywinauto = "*"
 allure-pytest = "*"
 requests-toolbelt = "*"
 pytest-bdd = "*"
 sttable = "*"
-playwright = "*"
 pytest-playwright = "*"
 
 [dev-packages]

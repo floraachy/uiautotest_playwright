@@ -115,9 +115,9 @@ def pytest_bdd_before_step(request, feature, scenario, step, step_func):
 
     # 对步骤进行处理，将需要替换的关键字${},利用data_handle方法进行替换处理
     setattr(step, "lines", [])
-    print(f"打印处理之前的：{step_name}", end="\n")
+    # print(f"打印处理之前的：{step_name}", end="\n")
     new_step_name = data_handle(step_name, {})
-    print(f"打印处理之后的：{new_step_name}", end="\n")
+    # print(f"打印处理之后的：{new_step_name}", end="\n")
     setattr(step, "name", new_step_name)
 
     # 获取罪行的步骤名称，作为allure的步骤
