@@ -73,10 +73,8 @@ def generate_allure_report():
     通过allure生成html测试报告，并对报告进行美化
     """
     # ----------------START: 判断运行的平台，是linux还是windows，执行不同的allure命令----------------
-    plat = PlatformHandle()
-    allure_path = os.path.join(LIB_DIR, [i for i in os.listdir(LIB_DIR) if i.startswith("allure")][0], "bin")
-    cmd = plat.allure[1].format(os.path.join(allure_path, plat.allure[0]), ALLURE_RESULTS_DIR, ALLURE_HTML_DIR)
-    os.popen(cmd).read()
+    allure_cmd = PlatformHandle().allure
+    os.popen(allure_cmd).read()
     # ----------------END: 判断运行的平台，是linux还是windows，执行不同的allure命令 ----------------
     # ----------------START: 美化allure测试报告 ------------------------------------------
     # 设置打开的 Allure 报告的浏览器窗口标题文案

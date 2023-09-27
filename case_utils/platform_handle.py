@@ -6,7 +6,10 @@
 # @Desc:  跨平台的支持allure，用于生成allure测试报告
 
 # 标准库导入
+import os.path
 import platform
+# 本地应用/模块导入
+from config.path_config import LIB_DIR, ALLURE_RESULTS_DIR, ALLURE_HTML_DIR
 
 
 class PlatformHandle:
@@ -14,18 +17,16 @@ class PlatformHandle:
 
     @property
     def allure(self):
+        allure_bin = os.path.join(LIB_DIR, [i for i in os.listdir(LIB_DIR) if i.startswith("allure")][0], "bin")
         if platform.system() == "Windows":
-            cmd = "allure.bat"
-            # 生成测试报告 --clean 覆盖路径，将上次的结果覆盖掉
-            cmd2 = "{} generate {} -o {} --clean"
+            allure_path = os.path.join(allure_bin, "allure.bat")
         else:
-            cmd = "allure"
-            # 生成测试报告 --clean 覆盖路径，将上次的结果覆盖掉
-            cmd2 = "sudo {} generate {} -o {} --clean"
-        return cmd, cmd2
+            allure_path = os.path.join(allure_bin, "allure")
+            os.system(f"chmod +x {allure_path}")
+        cmd = f"{allure_path} generate {ALLURE_RESULTS_DIR} -o {ALLURE_HTML_DIR} --clean"
+        return cmd
 
 
 if __name__ == '__main__':
-    plat = PlatformHandle()
-    res = plat.allure[0]
+    res = PlatformHandle().allure
     print(res)
