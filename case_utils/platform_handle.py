@@ -9,7 +9,7 @@
 import os.path
 import platform
 # 本地应用/模块导入
-from config.path_config import LIB_DIR, ALLURE_RESULTS_DIR, ALLURE_HTML_DIR
+from config.path_config import LIB_DIR
 
 
 class PlatformHandle:
@@ -22,9 +22,8 @@ class PlatformHandle:
             allure_path = os.path.join(allure_bin, "allure.bat")
         else:
             allure_path = os.path.join(allure_bin, "allure")
-            os.system(f"sudo chmod +x {allure_path}")
-        cmd = f"{allure_path} generate {ALLURE_RESULTS_DIR} -o {ALLURE_HTML_DIR} --clean"
-        return cmd
+            os.popen(f"chmod +x {allure_path}").read()
+        return allure_path
 
 
 if __name__ == '__main__':

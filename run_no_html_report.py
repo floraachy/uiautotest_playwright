@@ -68,43 +68,6 @@ def capture_logs(level=LOG_LEVEL):
         )
 
 
-def generate_allure_report():
-    """
-    通过allure生成html测试报告，并对报告进行美化
-    """
-    # ----------------START: 判断运行的平台，是linux还是windows，执行不同的allure命令----------------
-    cmd = f"{PlatformHandle().allure} generate {ALLURE_RESULTS_DIR} -o {ALLURE_HTML_DIR} --clean"
-    os.popen(cmd).read()
-    # ----------------END: 判断运行的平台，是linux还是windows，执行不同的allure命令 ----------------
-    # ----------------START: 美化allure测试报告 ------------------------------------------
-    # 设置打开的 Allure 报告的浏览器窗口标题文案
-    AllureReportBeautiful(allure_html_path=ALLURE_HTML_DIR).set_windows_title(
-        new_title=ENV_VARS["common"]["项目名称"])
-    # 修改Allure报告Overview的标题文案
-    AllureReportBeautiful(allure_html_path=ALLURE_HTML_DIR).set_report_name(
-        new_name=ENV_VARS["common"]["报告标题"])
-    # 在allure-html报告中往widgets/environment.json中写入环境信息
-    env_info = ENV_VARS["common"]
-    env_info["运行环境"] = GLOBAL_VARS.get("host", None)
-    AllureReportBeautiful(allure_html_path=ALLURE_HTML_DIR).set_report_env_on_html(
-        env_info=env_info)
-    # ----------------END: 美化allure测试报告 ------------------------------------------
-    # ----------------START: 压缩allure测试报告，方便后续发送压缩包------------------------------------------
-    # 复制http_server.exe以及双击打开Allure报告.bat，以便windows环境下，直接打开查看allure html报告
-    allure_config_path = os.path.join(CONF_DIR, "allure_config")
-    copy_file(src_file_path=os.path.join(allure_config_path,
-                                         [i for i in os.listdir(allure_config_path) if i.endswith(".exe")][0]),
-              dest_dir_path=ALLURE_HTML_DIR)
-    copy_file(src_file_path=os.path.join(allure_config_path,
-                                         [i for i in os.listdir(allure_config_path) if i.endswith(".bat")][0]),
-              dest_dir_path=ALLURE_HTML_DIR)
-
-    attachment_path = os.path.join(REPORT_DIR, f'autotest_report.zip')
-    zip_file(in_path=ALLURE_HTML_DIR, out_path=attachment_path)
-    # ----------------END: 压缩allure测试报告，方便后续发送压缩包------------------------------------------
-    return ALLURE_HTML_DIR, attachment_path
-
-
 def run(**kwargs):
     try:
         # ------------------------ 处理一下获取到的参数----------------------------
@@ -141,11 +104,6 @@ def run(**kwargs):
         # ------------------------ pytest执行测试用例 ------------------------
         print(f"打印一下运行的参数：{arg_list}")
         pytest.main(args=arg_list)
-        # ------------------------ 生成测试报告 ------------------------
-        report_path, attachment_path = generate_allure_report()
-        # ------------------------ 发送测试结果 ------------------------
-
-        send_result(report_path=report_path, attachment_path=attachment_path)
     except Exception as e:
         raise e
 
