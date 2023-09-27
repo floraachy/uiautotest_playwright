@@ -22,7 +22,7 @@ class PlatformHandle:
             allure_path = os.path.join(allure_bin, "allure.bat")
         else:
             allure_path = os.path.join(allure_bin, "allure")
-            os.system(f"chmod +x {allure_path}")
+            os.system(f"sudo chmod +x {allure_path}")
         cmd = f"{allure_path} generate {ALLURE_RESULTS_DIR} -o {ALLURE_HTML_DIR} --clean"
         return cmd
 
